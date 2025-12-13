@@ -1,75 +1,62 @@
 package es.etg.dam.pmdm.basedatosroom.ui
 
-import android.R
 import android.os.Bundle
-import android.view.View
-import android.widget.ArrayAdapter
-import android.widget.ListView
-import androidx.activity.enableEdgeToEdge
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
 import es.etg.dam.pmdm.basedatosroom.data.ClienteDatabase
 import es.etg.dam.pmdm.basedatosroom.data.entity.ClienteEntity
+import es.etg.dam.pmdm.basedatosroom.data.entity.ClienteTelefonosEntity
+import es.etg.dam.pmdm.basedatosroom.data.entity.TelefonoEntity
 import es.etg.dam.pmdm.basedatosroom.databinding.ActivityMainBinding
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     companion object {
         lateinit var database: ClienteDatabase
-        const val DATABASE_NAME = "clietne"
+        const val DATABASE_NAME = "cliente"
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        MainActivity.database =  Room.databaseBuilder(this, ClienteDatabase::class.java,
+        MainActivity.database =  Room.databaseBuilder(this,
+            ClienteDatabase::class.java,
             DATABASE_NAME).build()
+
+        guardar()
+
     }
 
-    fun guardar(view: View){
-
-        val nombre: String = binding.ettNombre.text.toString()
-        val apellidos: String = binding.ettApellido.text.toString()
-        val cliente = ClienteEntity(0, nombre, apellidos);
+    private fun guardar(){
         val clienteDao = database.clienteDao()
+        val telefonoDao = database.telefonoDao();
+
+        var clienteId: Long = 0 ;
+        val cliente = ClienteEntity(0, "Alumno","Apellidos");
+        var lista: List<ClienteTelefonosEntity>
 
         CoroutineScope(Dispatchers.IO).launch {
-            clienteDao.insert(cliente)
+
+            // Insertamos el cliente y nos guardamos su id
+            clienteId = clienteDao.insert(cliente)
+
+            // Creamos un teléfono para ese cliente (con el id antes recogido)
+            val telefono = TelefonoEntity(0, "tel1", clienteId)
+            // Insertamos el cliente
+            telefonoDao.insert(telefono)
+
+            // Obtenemos todos los clientes y sus telefonos
+            lista = clienteDao.getClientesTelefonos();
         }
-    }
 
-    fun mostrar(view: View){
-        val adapter = ArrayAdapter(this, R.layout.simple_spinner_item, ArrayList<String>())
-        val lv: ListView = binding.lvListado
+        Toast.makeText(this,"Todo cargado",Toast.LENGTH_LONG).show()
 
-        lv.adapter = adapter
-        loadData(adapter)
-
-
-    }
-
-    fun  loadData(adapter: ArrayAdapter<String>) {
-        val datos = ArrayList<String>()
-        //En el disppatcher IO es para entradas y salidas: bases de datos, ficheros, redes...
-        CoroutineScope(Dispatchers.IO).launch {
-            val clienteDao = database.clienteDao()
-            val clientes = clienteDao.getAll()
-            clientes.forEach { cliente ->
-                datos.add("Nombre ${cliente.nombre} y apellidos ${cliente.apellidos}")
-            }
-            //Lo siguiente, que es un actualización de la vista, lo ejecutamos en el hilo principal
-            //Cambiamos el contexto
-            withContext(Dispatchers.Main) {
-                adapter.addAll(datos)
-                adapter.notifyDataSetChanged()
-            }
-        }
     }
 }
