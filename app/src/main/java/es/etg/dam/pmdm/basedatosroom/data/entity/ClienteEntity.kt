@@ -1,10 +1,9 @@
-package es.etg.dam.pmdm.basedatosroom.data
+package es.etg.dam.pmdm.basedatosroom.data.entity
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-
-@Entity (tableName = "cliente")
+@Entity(tableName = "cliente")
 data class ClienteEntity(
     @PrimaryKey(autoGenerate = true)
     var id:Int = 0,
