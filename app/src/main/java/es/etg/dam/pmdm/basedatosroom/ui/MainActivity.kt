@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         const val DATABASE_NAME = "cliente"
         const val MSG_COMPLETAR = "Por favor complete todos los campos"
         const val MSG_ALMACENADO = "Almacenado corectamente"
-        const val MSG_NUMERO_TELEFONO = "Competa corectamento numero"
+        const val MSG_NUMERO_TELEFONO = "Introduce 9 Numero"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
