@@ -1,6 +1,7 @@
 package es.etg.dam.pmdm.basedatosroom.ui
 
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.room.Room
@@ -19,6 +20,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         lateinit var database: ClienteDatabase
         const val DATABASE_NAME = "cliente"
+        const val MSG_COMPLETAR = "Por favor complete todos los campos"
+        const val MSG_ALMACENADO = "Almacenado corectamente"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -30,25 +33,31 @@ class MainActivity : AppCompatActivity() {
             ClienteDatabase::class.java,
             DATABASE_NAME).build()
 
-        guardar()
-
     }
 
-    private fun guardar(){
+    fun guardar(view: View){
         val clienteDao = database.clienteDao()
         val telefonoDao = database.telefonoDao();
 
+        var nombre = binding.ettNombre.text.toString()
+        var apellido = binding.ettApellido.text.toString()
+        var numTelefono = binding.ettTelefono.text.toString()
+
+        if (nombre.isEmpty() || apellido.isEmpty() || numTelefono.isEmpty()) {
+            Toast.makeText(this, MSG_COMPLETAR, Toast.LENGTH_SHORT).show()
+            return
+        }
+
         var clienteId: Long = 0 ;
-        val cliente = ClienteEntity(0, "Alumno","Apellidos");
+        val cliente = ClienteEntity(0, nombre, apellido);
         var lista: List<ClienteTelefonosEntity>
 
         CoroutineScope(Dispatchers.IO).launch {
 
             // Insertamos el cliente y nos guardamos su id
             clienteId = clienteDao.insert(cliente)
-
             // Creamos un teléfono para ese cliente (con el id antes recogido)
-            val telefono = TelefonoEntity(0, "tel1", clienteId)
+            val telefono = TelefonoEntity(0, numTelefono, clienteId)
             // Insertamos el cliente
             telefonoDao.insert(telefono)
 
@@ -56,7 +65,14 @@ class MainActivity : AppCompatActivity() {
             lista = clienteDao.getClientesTelefonos();
         }
 
-        Toast.makeText(this,"Todo cargado",Toast.LENGTH_LONG).show()
-
+        Toast.makeText(this,MSG_ALMACENADO,Toast.LENGTH_LONG).show()
+        limpiar()
     }
+
+    private fun limpiar() {
+        binding.ettNombre.text.clear()
+        binding.ettApellido.text.clear()
+        binding.ettTelefono.text.clear()
+    }
+
 }

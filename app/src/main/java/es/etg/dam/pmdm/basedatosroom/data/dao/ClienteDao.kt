@@ -19,4 +19,7 @@ interface ClienteDao {
     @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(cliente: ClienteEntity):Long
+
+    @Query ("SELECT id, nombre, apellidos FROM cliente")
+    suspend fun getAll(): List<ClienteEntity>
 }
