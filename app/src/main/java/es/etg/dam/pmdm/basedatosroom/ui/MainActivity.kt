@@ -45,11 +45,13 @@ class MainActivity : AppCompatActivity() {
         var apellido = binding.ettApellido.text.toString()
         var numTelefono = binding.ettTelefono.text.toString()
 
+        // validar que los campos no esten vacios
         if (nombre.isEmpty() || apellido.isEmpty() || numTelefono.isEmpty()) {
             Toast.makeText(this, MSG_COMPLETAR, Toast.LENGTH_SHORT).show()
             return
         }
 
+        // validar que el numero tenga 9 digitos
         if (numTelefono.length != 9) {
             Toast.makeText(this, MSG_NUMERO_TELEFONO, Toast.LENGTH_SHORT).show()
             return
