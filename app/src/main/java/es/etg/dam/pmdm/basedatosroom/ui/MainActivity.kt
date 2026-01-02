@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.text.isDigitsOnly
 import androidx.room.Room
 import es.etg.dam.pmdm.basedatosroom.data.ClienteDatabase
 import es.etg.dam.pmdm.basedatosroom.data.entity.ClienteEntity
@@ -22,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         const val DATABASE_NAME = "cliente"
         const val MSG_COMPLETAR = "Por favor complete todos los campos"
         const val MSG_ALMACENADO = "Almacenado corectamente"
+        const val MSG_NUMERO_TELEFONO = "Competa corectamento numero"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,6 +47,11 @@ class MainActivity : AppCompatActivity() {
 
         if (nombre.isEmpty() || apellido.isEmpty() || numTelefono.isEmpty()) {
             Toast.makeText(this, MSG_COMPLETAR, Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        if (numTelefono.length != 9) {
+            Toast.makeText(this, MSG_NUMERO_TELEFONO, Toast.LENGTH_SHORT).show()
             return
         }
 
